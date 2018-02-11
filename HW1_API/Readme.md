@@ -22,8 +22,11 @@ And then, we use wget to download the image to local file.
 ```
 
 ## FFMPEG to convert images to videos
-
-Use the system command:
+Install FFMPEG by:
+```
+brew install ffmpeg
+```
+Then use the system command:
 ```
 import os
 
