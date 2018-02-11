@@ -14,10 +14,10 @@ import google.cloud.vision
 
 
 #Twitter API credentials
-consumer_key = "ykHkmJMCHdUL2pWTR3gqQdYpf"
-consumer_secret = "4OErLmuL5H2gbjUejzx23dj7eLjjfy2PKgQM9TiLMi6XnbewCs"
-access_token = "784730989348134912-ZtCaU3ofNCNZg3tDe21MOAPo7A2IeBe"
-access_secret = "NSiuoqMEepSH2tZm3tfAP0afdydzCv8MORqVyAk51CVJA"
+consumer_key = ""
+consumer_secret = ""
+access_token = ""
+access_secret = ""
 
 
 def get_all_tweets(screen_name):
