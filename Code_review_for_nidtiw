@@ -19,8 +19,10 @@ The coder doesn’t provide any personal error handle case only the default with
 
 It is quite hard to write a test program on the code. Hence I just try different error could happen on top of the original code.
 
-Wrong twitter api key: “tweepy.error.TweepError: [{'code': 32, 'message': 'Could not authenticate you.’}]” This is the default error by tweepy.
-Twitter account without image I insert my own twitter account @AngelaBubble, the error I got is: “Traceback (most recent call last):
+1.Wrong twitter api key:
+“tweepy.error.TweepError: [{'code': 32, 'message': 'Could not authenticate you.’}]” This is the default error by tweepy.
+
+2.Twitter account without image I insert my own twitter account @AngelaBubble, the error I got is: “Traceback (most recent call last):
   File "vision_structured.py", line 47, in <module>
     last_id = tweets[-1].id
 IndexError: list index out of range” 	which is still the default error message.
