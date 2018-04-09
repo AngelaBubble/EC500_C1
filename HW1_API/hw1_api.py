@@ -14,11 +14,10 @@ import google.cloud.vision
 
 
 #Twitter API credentials
-consumer_key = ""
-consumer_secret = ""
-access_token = ""
-access_secret = ""
-
+    consumer_key = "ykHkmJMCHdUL2pWTR3gqQdYpf"
+    consumer_secret = "4OErLmuL5H2gbjUejzx23dj7eLjjfy2PKgQM9TiLMi6XnbewCs"
+    access_token = "784730989348134912-ZtCaU3ofNCNZg3tDe21MOAPo7A2IeBe"
+    access_secret = "NSiuoqMEepSH2tZm3tfAP0afdydzCv8MORqVyAk51CVJA"
 
 def get_all_tweets(screen_name):
     
@@ -31,25 +30,27 @@ def get_all_tweets(screen_name):
         setattr(status, 'json', json.dumps(raw))
         return status
  
-    # Status() is the data model for a tweet
-    tweepy.models.Status.first_parse = tweepy.models.Status.parse
-    tweepy.models.Status.parse = parse
-    # User() is the data model for a user profil
-    tweepy.models.User.first_parse = tweepy.models.User.parse
-    tweepy.models.User.parse = parse
-    # You need to do it for all the models you need
- 
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
  
     api = tweepy.API(auth)
-    
+    DIRECTORY = os.getcwd()
+
+    # Checking if there is already an output movie file
+    os.system('rm output.mp4')
     #initialize a list to hold all the tweepy Tweets
     alltweets = []    
     
-    #make initial request for most recent tweets (200 is the maximum allowed count)
-    new_tweets = api.user_timeline(screen_name = screen_name,count=10)
-    
+    # Gathering twitter data
+    try:
+        alltweets = api.user_timeline(screen_name=screen_name,          # Gather first set of tweets
+                               count=number_tweets, include_rts=False,
+                               exclude_replies=True)
+    except:
+        print('This username does not exist. \n')
+        return 'This username does not exist.'
+
+    max_id = alltweets[-1].id
     #save most recent tweets
     alltweets.extend(new_tweets)
     
@@ -85,6 +86,9 @@ def get_all_tweets(screen_name):
     #close the file
     print (media_files)
 
+    if len(media_files) == 0:
+        print('There are no images in these tweets')
+        return 'There are no images in these tweets'
     #download image
     media_names = set()
     for media_file in media_files:
@@ -95,15 +99,14 @@ def get_all_tweets(screen_name):
     print (media_names)
 
     #convert image to video
-    for filename in media_names:
-        output = filename.replace(".jpg",".mp4")
-        cmd = "ffmpeg -loop 1 -i " + filename + " -c:a libfdk_aac -ar 44100 -ac 2 -vf \"scale='if(gt(a,16/9),1280,-1)\':\'if(gt(a,16/9),-1,720)\', pad=1280:720:(ow-iw)/2:(oh-ih)/2\" -c:v libx264 -b:v 10M -pix_fmt yuv420p -r 30 -shortest -avoid_negative_ts make_zero -fflags +genpts -t 1 " + output
-        os.system(cmd)
+    os.system('cat *.jpg | ffmpeg -f image2pipe -framerate .5 -i - output.mp4')
 
     #describe the content of the images
     # Create a Vision client.
-    vision_client = google.cloud.vision.ImageAnnotatorClient()
-    file = open('resul.txt', 'w')   #vision_client = vision.Client()
+    labels_dict = {}
+    path = glob.glob('*.jpg')
+    client = vision.ImageAnnotatorClient()
+    count = 0
 
     # TODO (Developer): Replace this with the name of the local image
     # file to analyze.
@@ -114,11 +117,13 @@ def get_all_tweets(screen_name):
          # Use Vision to label the image based on content.
         image = google.cloud.vision.types.Image(content=content)
         response = vision_client.label_detection(image=image)
-        file.write("Labels for " + image_file_name + " :\n")
+        labels_dict[str(count)] = []
         #print('Labels:')
         for label in response.label_annotations:
             #print(label.description)
-            file.write(label.description + "\n")
+            labels_dict[str(count)].append(label.description)
+        count += 1
+    return labels_dict 
 
 
 
